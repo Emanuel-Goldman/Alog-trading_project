@@ -254,25 +254,28 @@ def get_csv_data(symbol, interval, start_date, end_date,name):
 def main():
     # Getting the data and storing it in a csv file 
     # (Note: This will take a while to run! so we run it once and save the data in a csv file)
-    path = '' # Enter the path of the file you want to save the data in
-    symbol = 'BTCUSDT'
-    interval = '30m'
-    start_date = int(datetime(year=2023, month=1, day=1).timestamp() * 1000)
-    end_date = int(datetime(year=2024, month=1, day=1).timestamp() * 1000)
-    get_csv_data(symbol, interval, start_date, end_date,path) # This will take a while to run!
+    # path = '' # Enter the path of the file you want to save the data in
+    # symbol = 'BTCUSDT'
+    # interval = '30m'
+    # start_date = int(datetime(year=2023, month=1, day=1).timestamp() * 1000)
+    # end_date = int(datetime(year=2024, month=1, day=1).timestamp() * 1000)
+    # get_csv_data(symbol, interval, start_date, end_date,path) # This will take a while to run!
 
-    df = pd.read_csv(path)
+    # df = pd.read_csv(path)
 
-    # Creating the strategy instance
-    strategy = our_strategy(fast_ema=12,slow_ema=26,atr_length_buy=300,atr_length_sell=1,key_value=1,somoothing_f=0.5)
-    balance = 10000
-    df['sell'] = None
-    df['buy'] = None
-    ans = backtest(starting_balance=balance,strategy=strategy,data=df)
-    evaluate_strategy(ans,'out_strategy')
-    df.to_csv('data_for_part_2.csv', index=False)  # Change 'data.csv' to your desired file name
-    plot_strategy(df)
-    plot_profit(df)
+    # # Creating the strategy instance
+    # strategy = our_strategy(fast_ema=12,slow_ema=26,atr_length_buy=300,atr_length_sell=1,key_value=1,somoothing_f=0.5)
+    # balance = 10000
+    # df['sell'] = None
+    # df['buy'] = None
+    # ans = backtest(starting_balance=balance,strategy=strategy,data=df)
+    # evaluate_strategy(ans,'out_strategy')
+    # df.to_csv('data_for_part_2.csv', index=False)  # Change 'data.csv' to your desired file name
+    # plot_strategy(df)
+    # plot_profit(df)
+    print('Hello World!')
+    df = pd.read_csv('old_not_relevant\data_for_part_2.csv')
+    print(df.describe())
     
 
 if __name__ == "__main__":
