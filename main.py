@@ -254,15 +254,14 @@ def get_csv_data(symbol, interval, start_date, end_date,name):
 def main():
     # Getting the data and storing it in a csv file 
     # (Note: This will take a while to run! so we run it once and save the data in a csv file)
+    path = '' # Enter the path of the file you want to save the data in
     symbol = 'BTCUSDT'
     interval = '30m'
     start_date = int(datetime(year=2023, month=1, day=1).timestamp() * 1000)
     end_date = int(datetime(year=2024, month=1, day=1).timestamp() * 1000)
-    name = 'data_for_part_2.csv'
-    get_csv_data(symbol, interval, start_date, end_date,name) # This will take a while to run!
+    get_csv_data(symbol, interval, start_date, end_date,path) # This will take a while to run!
 
-    df = pd.read_csv(name)
-    STC(df,80,27,50,0.5)
+    df = pd.read_csv(path)
 
     # Creating the strategy instance
     strategy = our_strategy(fast_ema=12,slow_ema=26,atr_length_buy=300,atr_length_sell=1,key_value=1,somoothing_f=0.5)
