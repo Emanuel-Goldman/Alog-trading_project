@@ -251,6 +251,8 @@ def get_csv_data(symbol, interval, start_date, end_date,name):
     return in_range_btcusdt_df
 
 
+
+
 def main():
     # Getting the data and storing it in a csv file 
     # (Note: This will take a while to run! so we run it once and save the data in a csv file)
