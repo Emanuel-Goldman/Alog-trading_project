@@ -178,36 +178,78 @@ def get_all_data(coins, interval, start_date, end_date):
 def calculate_returns_column(df):
     df['returns'] = df['close'].pct_change(1)
 
-
+    # coins = ['BTCUSDT', 'ETHUSDT', 'BNBUSDT',
+    #          'ADAUSDT', 'XRPUSDT', 'DOGEUSDT',
+    #          'DOTUSDT', 'UNIUSDT', 'LINKUSDT',
+    #          'LTCUSDT', 'BCHUSDT', 'SOLUSDT',
+    #          'MATICUSDT', 'XLMUSDT', 'ETCUSDT',
+    #          'THETAUSDT', 'VETUSDT', 'TRXUSDT',
+    #          'EOSUSDT', 'FILUSDT', 'AAVEUSDT',
+    #          'XTZUSDT', 'ATOMUSDT', 'NEOUSDT',
+    #          'ALGOUSDT', 'MKRUSDT', 'COMPUSDT',
+    #          'KSMUSDT']
 
 def main():
     
-    coins = ['BTCUSDT', 'ETHUSDT', 'BNBUSDT',
-             'ADAUSDT', 'XRPUSDT', 'DOGEUSDT',
-             'DOTUSDT', 'UNIUSDT', 'LINKUSDT',
-             'LTCUSDT', 'BCHUSDT', 'SOLUSDT',
-             'MATICUSDT', 'XLMUSDT', 'ETCUSDT',
-             'THETAUSDT', 'VETUSDT', 'TRXUSDT',
-             'EOSUSDT', 'FILUSDT', 'AAVEUSDT',
-             'XTZUSDT', 'ATOMUSDT', 'NEOUSDT',
-             'ALGOUSDT', 'MKRUSDT', 'COMPUSDT',
-             'KSMUSDT']
+    dtype={
+    'open_time': 'datetime64[ms, Asia/Jerusalem]',
+    'open': 'float64',
+    'high': 'float64',
+    'low': 'float64',
+    'close': 'float64',
+    'volume': 'float64',
+    'close_time': 'datetime64[ms, Asia/Jerusalem]',
+    }
+    
+
     # we can also use the coins 'CROUSDT', 'HTUSDT','CHZUSDT', 'SNXUSDT', 'YFI' if we want to add more coins
-    
+    # coins = ['BTCUSDT', 'ETHUSDT', 'BNBUSDT',
+    #          'ADAUSDT', 'XRPUSDT', 'DOGEUSDT',
+    #          'DOTUSDT', 'UNIUSDT', 'LINKUSDT',
+    #          'LTCUSDT', 'BCHUSDT', 'SOLUSDT',
+    #          'MATICUSDT', 'XLMUSDT', 'ETCUSDT',
+    #          'THETAUSDT', 'VETUSDT', 'TRXUSDT',
+    #          'EOSUSDT', 'FILUSDT', 'AAVEUSDT',
+    #          'XTZUSDT', 'ATOMUSDT', 'NEOUSDT',
+    #          'ALGOUSDT', 'MKRUSDT', 'COMPUSDT',
+    #          'KSMUSDT']
     files =  os.listdir('data')
+    # columns = [
+    # 'BTCUSDT', 'BTCUSDT_dt', 'ETHUSDT', 'ETHUSDT_dt', 'BNBUSDT', 'BNBUSDT_dt',
+    # 'ADAUSDT', 'ADAUSDT_dt', 'XRPUSDT', 'XRPUSDT_dt', 'DOGEUSDT', 'DOGEUSDT_dt',
+    # 'DOTUSDT', 'DOTUSDT_dt', 'UNIUSDT', 'UNIUSDT_dt', 'LINKUSDT', 'LINKUSDT_dt',
+    # 'LTCUSDT', 'LTCUSDT_dt', 'BCHUSDT', 'BCHUSDT_dt', 'SOLUSDT', 'SOLUSDT_dt',
+    # 'MATICUSDT', 'MATICUSDT_dt', 'XLMUSDT', 'XLMUSDT_dt', 'ETCUSDT', 'ETCUSDT_dt',
+    # 'THETAUSDT', 'THETAUSDT_dt', 'VETUSDT', 'VETUSDT_dt', 'TRXUSDT', 'TRXUSDT_dt',
+    # 'EOSUSDT', 'EOSUSDT_dt', 'FILUSDT', 'FILUSDT_dt', 'AAVEUSDT', 'AAVEUSDT_dt',
+    # 'XTZUSDT', 'XTZUSDT_dt', 'ATOMUSDT', 'ATOMUSDT_dt', 'NEOUSDT', 'NEOUSDT_dt',
+    # 'ALGOUSDT', 'ALGOUSDT_dt', 'MKRUSDT', 'MKRUSDT_dt', 'COMPUSDT', 'COMPUSDT_dt',
+    # 'KSMUSDT', 'KSMUSDT_dt'
+    # ]
+    # columns.sort()
+    # df = pd.DataFrame(columns=columns)
+    # coins.sort()
+    # for file, coin in zip(files, coins):
+    #     print(f'file: {file} coin: {coin}')
+    #     df_curr = pd.read_csv(f'data/{file}')
+    #     df_curr = df_curr.astype(dtype)
+    #     df_curr = df_curr[df_curr['open_time'] > '2020-10-23 10:00:00+03:00']
+    #     df[f'{coin}'] = df_curr['returns']
+    #     df[f'{coin}_dt'] = df_curr['close_time']
     
-    for file in files:
-        df = pd.read_csv(f'data/{file}')
-        calculate_returns_column(df)
-        df.to_csv(f'data/{file}', index=False)
-    
+    # df.to_csv('data/returns.csv', index=False)
+
     # Todo list:
     # 1. To get all the data from the binance API to a csv file
     # 2. To clean the data
     # 3. To create the model that predicts 
     # 4. To create the strategy
     # 5. To backtest the strategy
-    
-
+    for file in files:
+        df_curr = pd.read_csv(f'data/{file}')
+        df_curr = df_curr.astype(dtype)
+        df_curr = df_curr[df_curr['open_time'] < '2024-06-16 16:00:00+03:00']
+        print(f'{file}, its shape is {df_curr.shape[0]}, first date is {df_curr.iloc[0]["open_time"]}, last date is {df_curr.iloc[-1]["open_time"]}')
+        df_curr.to_csv(f'data/{file}', index=False)
 if __name__ == "__main__":
     main()
