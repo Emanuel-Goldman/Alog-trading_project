@@ -157,3 +157,23 @@ def is_in_range(date):
 
 def calculate_returns_column(df):
     df['returns'] = df['close'].pct_change(1) 
+    
+    
+def clean_data():
+    for file in files:
+        df_curr = pd.read_csv(f'data/{file}')
+        df_curr = df_curr.astype(dtype)
+        df_curr = df_curr[(df_curr['open_time'] < '2024-06-16 16:00:00+03:00') & (df_curr['open_time'] > '2020-10-23 10:00:00+03:00')]
+        print(f'{file}, its shape is {df_curr.shape[0]}, first date is {df_curr.iloc[0]["open_time"]}, last date is {df_curr.iloc[-1]["open_time"]}')
+        df_curr.to_csv(f'data/{file}', index=False)
+        
+def combine_data():    
+    files =  os.listdir('data')
+    coins.sort()
+    df = pd.DataFrame(columns=coins)
+    for file, coin in zip(files, coins):
+        print(f'file: {file} coin: {coin}')
+        df_curr = pd.read_csv(f'data/{file}')
+        df[f'{coin}'] = df_curr['returns']
+    
+    df.to_csv('result/returns.csv', index=False)

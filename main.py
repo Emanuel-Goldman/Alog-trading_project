@@ -67,16 +67,6 @@ def main():
     'close_time': 'datetime64[ms, Asia/Jerusalem]',
     }
     
-    
-    files =  os.listdir('data')
-    coins.sort()
-    df = pd.DataFrame(columns=coins)
-    for file, coin in zip(files, coins):
-        print(f'file: {file} coin: {coin}')
-        df_curr = pd.read_csv(f'data/{file}')
-        df[f'{coin}'] = df_curr['returns']
-    
-    df.to_csv('result/returns.csv', index=False)
 
     # Todo list:
     # 1. To get all the data from the binance API to a csv file
@@ -84,13 +74,7 @@ def main():
     # 3. To create the model that predicts 
     # 4. To create the strategy
     # 5. To backtest the strategy
-    
-    # for file in files:
-    #     df_curr = pd.read_csv(f'data/{file}')
-    #     df_curr = df_curr.astype(dtype)
-    #     df_curr = df_curr[(df_curr['open_time'] < '2024-06-16 16:00:00+03:00') & (df_curr['open_time'] > '2020-10-23 10:00:00+03:00')]
-    #     print(f'{file}, its shape is {df_curr.shape[0]}, first date is {df_curr.iloc[0]["open_time"]}, last date is {df_curr.iloc[-1]["open_time"]}')
-    #     df_curr.to_csv(f'data/{file}', index=False)
+
         
 if __name__ == "__main__":
     main()
