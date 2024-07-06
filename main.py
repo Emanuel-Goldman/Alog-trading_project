@@ -7,7 +7,7 @@ from datetime import datetime
 from enum import Enum
 from typing import List
 import matplotlib.pyplot as plt
-from strategies import BaseStrategy as bs
+from strategies import our_strategy 
 from models import *
 from backtesting import *
 from evaluation import *
@@ -29,15 +29,26 @@ def plot_strategy(df):
 
 def plot_profit(df):
     plt.figure(figsize=(25,10))
-    plt.plot(df['portfolio_value'].pct_change(1)*100, label = 'Portfolio')
+    plt.plot(df['portfolio_value'], label = 'Portfolio')
     plt.legend()
     plt.show()
+    
+    
+    
 
 
 
 def main():
+    data = pd.read_csv(r'data\all data.csv')
+    strategy = our_strategy(sl_pct = 0.02, tp_pct = 0.05, path = r'data\all data.csv')
+    backteting_results = backtest(data, strategy, starting_balance = 1000)
+    
+    backteting_results.to_csv(r'result\backtesting_results.csv')
+    
+    # plot_strategy(backteting_results)
+    plot_profit(backteting_results)
+    
 
-    print("Downloading Data...")
     
 
 if __name__ == "__main__":

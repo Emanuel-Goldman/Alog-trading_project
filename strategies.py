@@ -30,6 +30,8 @@ class BaseStrategy(ABC):
         tp_res = self.is_take_profit(row, position)
         if tp_res is not None:
             return tp_res
+        
+        return None
     
     def is_stop_loss(self, row: pd.Series, position: Position) -> Tuple[float, float, ActionType]:
         """
@@ -42,10 +44,7 @@ class BaseStrategy(ABC):
             long_stop_loss_price = position.price * (1 - self.sl_rate)
             if position.type == PositionType.LONG and row['low'] <= long_stop_loss_price:
                 return position.qty, long_stop_loss_price, ActionType.SELL
-            
-            short_stop_loss_price = position.price * (1 + self.sl_rate)
-            if position.type == PositionType.SHORT and row['high'] >= short_stop_loss_price:
-                return position.qty, short_stop_loss_price, ActionType.BUY
+
     
     def is_take_profit(self, row: pd.Series, position: Position) -> Tuple[float, float, ActionType]:
         """
@@ -59,35 +58,46 @@ class BaseStrategy(ABC):
             if position.type == PositionType.LONG and row['high'] >= long_take_profit_price:
                 return position.qty, long_take_profit_price, ActionType.SELL
             
-            short_take_profit_price = position.price * (1 - self.tp_rate)
-            if position.type == PositionType.SHORT and row['low'] <= short_take_profit_price:
-                return position.qty, short_take_profit_price, ActionType.BUY
-
-class BuyAndHoldStrategy(BaseStrategy):
-    def __init__(self, sl_rate: float = None, tp_rate: float = None) -> pd.Series:
-        super().__init__(sl_rate, tp_rate)
-    
-    def calc_signal(self, data: pd.DataFrame) -> pd.Series:
-        data['strategy_signal'] = StrategySignal.DO_NOTHING
-        data.iloc[0, data.columns.get_loc('strategy_signal')] = StrategySignal.ENTER_LONG
-        data.iloc[-1, data.columns.get_loc('strategy_signal')] = StrategySignal.CLOSE_LONG
-
-class SellAndHoldStrategy(BaseStrategy):
-    def __init__(self, sl_rate: float = None, tp_rate: float = None) -> pd.Series:
-        super().__init__(sl_rate, tp_rate)
-    
-    def calc_signal(self, data: pd.DataFrame) -> pd.Series:
-        data['strategy_signal'] = StrategySignal.DO_NOTHING
-        data.iloc[0, data.columns.get_loc('strategy_signal')] = StrategySignal.ENTER_SHORT
-        data.iloc[-1, data.columns.get_loc('strategy_signal')] = StrategySignal.CLOSE_SHORT
-
 class our_strategy(BaseStrategy):
-    def __init__(self, fast_ema:int, slow_ema:int, atr_length_sell:int, atr_length_buy:int, key_value:int, somoothing_f:float):
-        self.fast_length = fast_ema
-        self.slow_length = slow_ema
-        self.atr_length_buy = atr_length_buy
-        self.atr_length_sell = atr_length_sell
-        self.key_value = key_value
-        self.somoothing_f = somoothing_f
+    def __init__(self, sl_pct:int, tp_pct:int, path:str):
+        self.sl_pct = sl_pct
+        self.tp_pct = tp_pct
+        self.path = path
         
+    def calc_signal(self, data: pd.DataFrame):
+        df_model_res = pd.read_csv(self.path)
+        data['strategy_signal'] = df_model_res['y_pred']
+        
+    def check_sl_tp(self, row: pd.Series, position: Position) -> Tuple[float, float, ActionType]:
+        
+        ### -------------------------------------------------------- ###
+        # WE WOULD LIKE TO CREATE A TRAILING STOP LOSS AND TAKE PROFIT
+        ### -------------------------------------------------------- ###
+        
+        def is_stop_loss(self, row: pd.Series, position: Position) -> Tuple[float, float, ActionType]:
+            if row['close'] <= position.price * (1 - self.sl_pct):
+                return position.qty, position.price * (1 - self.sl_pct), ActionType.SELL
+            else:
+                return None
+        
+        def is_take_profit(self, row: pd.Series, position: Position) -> Tuple[float, float, ActionType]:
+            if row['close'] >= position.price * (1 + self.tp_pct):
+                return position.qty, position.price * (1 + self.tp_pct), ActionType.SELL
+            else:
+                return None
+        
+        sl_res = is_stop_loss(self, row, position)
+        if sl_res is not None:
+            return sl_res
+        
+        tp_res = is_take_profit(self,row,position)
+        if tp_res is not None:
+            return tp_res
+        
+        else:
+            return None
+ 
+
+
+
         
