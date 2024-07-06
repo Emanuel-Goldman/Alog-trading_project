@@ -167,13 +167,13 @@ def clean_data():
         print(f'{file}, its shape is {df_curr.shape[0]}, first date is {df_curr.iloc[0]["open_time"]}, last date is {df_curr.iloc[-1]["open_time"]}')
         df_curr.to_csv(f'data/{file}', index=False)
         
-def combine_data():    
+def combine_data(column, coins):    
     files =  os.listdir('data')
     coins.sort()
     df = pd.DataFrame(columns=coins)
     for file, coin in zip(files, coins):
         print(f'file: {file} coin: {coin}')
         df_curr = pd.read_csv(f'data/{file}')
-        df[f'{coin}'] = df_curr['returns']
+        df[f'{coin}'] = df_curr[f'{column}']
     
-    df.to_csv('result/returns.csv', index=False)
+    df.to_csv(f'result/{column}.csv', index=False)

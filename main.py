@@ -11,6 +11,7 @@ from strategies import BaseStrategy as bs
 from models import *
 from backtesting import *
 from evaluation import *
+from get_data import *
 
 
 def plot_strategy(df):
@@ -32,49 +33,12 @@ def plot_profit(df):
     plt.legend()
     plt.show()
 
-    # coins = ['BTCUSDT', 'ETHUSDT', 'BNBUSDT',
-    #          'ADAUSDT', 'XRPUSDT', 'DOGEUSDT',
-    #          'DOTUSDT', 'UNIUSDT', 'LINKUSDT',
-    #          'LTCUSDT', 'BCHUSDT', 'SOLUSDT',
-    #          'MATICUSDT', 'XLMUSDT', 'ETCUSDT',
-    #          'THETAUSDT', 'VETUSDT', 'TRXUSDT',
-    #          'EOSUSDT', 'FILUSDT', 'AAVEUSDT',
-    #          'XTZUSDT', 'ATOMUSDT', 'NEOUSDT',
-    #          'ALGOUSDT', 'MKRUSDT', 'COMPUSDT',
-    #          'KSMUSDT']
+
 
 def main():
-    
-    # we can also use the coins 'CROUSDT', 'HTUSDT','CHZUSDT', 'SNXUSDT', 'YFI' if we want to add more coins
-    coins = ['BTCUSDT', 'ETHUSDT', 'BNBUSDT',
-             'ADAUSDT', 'XRPUSDT', 'DOGEUSDT',
-             'DOTUSDT', 'UNIUSDT', 'LINKUSDT',
-             'LTCUSDT', 'BCHUSDT', 'SOLUSDT',
-             'MATICUSDT', 'XLMUSDT', 'ETCUSDT',
-             'THETAUSDT', 'VETUSDT', 'TRXUSDT',
-             'EOSUSDT', 'FILUSDT', 'AAVEUSDT',
-             'XTZUSDT', 'ATOMUSDT', 'NEOUSDT',
-             'ALGOUSDT', 'MKRUSDT', 'COMPUSDT',
-             'KSMUSDT']
-    
-    dtype={
-    'open_time': 'datetime64[ms, Asia/Jerusalem]',
-    'open': 'float64',
-    'high': 'float64',
-    'low': 'float64',
-    'close': 'float64',
-    'volume': 'float64',
-    'close_time': 'datetime64[ms, Asia/Jerusalem]',
-    }
+
+    print("Downloading Data...")
     
 
-    # Todo list:
-    # 1. To get all the data from the binance API to a csv file
-    # 2. To clean the data
-    # 3. To create the model that predicts 
-    # 4. To create the strategy
-    # 5. To backtest the strategy
-
-        
 if __name__ == "__main__":
     main()
