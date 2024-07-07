@@ -28,6 +28,8 @@ def plot_strategy(df):
 
 
 def plot_profit(df):
+    df['open_time'] = pd.to_datetime(df['open_time'])
+    df.set_index('open_time', inplace = True)
     plt.figure(figsize=(25,10))
     plt.plot(df['portfolio_value'], label = 'Portfolio')
     plt.legend()
@@ -39,14 +41,16 @@ def plot_profit(df):
 
 
 def main():
-    data = pd.read_csv(r'data\all data.csv')
-    strategy = our_strategy(sl_pct = 0.02, tp_pct = 0.05, path = r'data\all data.csv')
-    backteting_results = backtest(data, strategy, starting_balance = 1000)
+    # data = pd.read_csv(r'data\all data.csv')
+    # strategy = our_strategy(sl_pct = 0.02, tp_pct = 0.05, path = r'data\all data.csv')
+    # backteting_results = backtest(data, strategy, starting_balance = 1000)
     
-    backteting_results.to_csv(r'result\backtesting_results.csv')
+    # backteting_results.to_csv(r'result\backtesting_results.csv')
+    df = pd.read_csv(r'result\backtesting_results.csv')
+
     
     # plot_strategy(backteting_results)
-    plot_profit(backteting_results)
+    plot_profit(df)
     
 
     
