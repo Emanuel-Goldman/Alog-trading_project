@@ -278,8 +278,8 @@ def get_binance_historical_data(symbol, interval, start_date, end_date=None):
     
     
     df = pd.DataFrame(candles_data, columns=columns)
-    df.drop(['open', 'high', 'low', 'volume', 'close_time', 'quote_asset_volume',
-               'number_of_trades', 'taker_buy_base_asset_volume', 'taker_buy_quote_asset_volume', 'ignore'], axis=1, inplace=True)
     df = df.astype(dtype)
+    df.drop(['high', 'low', 'volume', 'close_time', 'quote_asset_volume',
+               'number_of_trades', 'taker_buy_base_asset_volume', 'taker_buy_quote_asset_volume', 'ignore'], axis=1, inplace=True)
 
     return df

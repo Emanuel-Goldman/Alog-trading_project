@@ -7,33 +7,35 @@ from evaluation import evaluate_strategy
 
 VISUALIZE = 2         
     
-def calc_realistic_price(row: pd.Series ,action_type: ActionType, slippage_factor=np.inf):
-    return row['close']
-    # slippage_rate = ((row['close'] - row['open']) / row['open']) / slippage_factor
-    # slippage_price = row['open'] + row['open'] * slippage_rate
+def calc_realistic_price(row: pd.Series ,action_type: ActionType, slippage_factor=1000):
+    slippage_rate = ((row['close'] - row['open']) / row['open']) / slippage_factor
+    if action_type == ActionType.BUY:
+        return row['open'] + row['open'] * slippage_rate
+    else:
+        return row['open'] - row['open'] * slippage_rate
     
-    # if action_type == ActionType.BUY:
-    #     return max(slippage_price, row['open'])
-    # else:
-    #     return min(slippage_price, row['open'])   
+     
 
-def backtest(data: pd.DataFrame, strategy: BaseStrategy, starting_balance: int, slippage_factor: float=5.0, commission: float=0.0) -> pd.DataFrame:       
+def backtest(data: pd.DataFrame, strategy: BaseStrategy, starting_balance: int, slippage_factor: float=1000, commission: float=0.0) -> pd.DataFrame:       
     
-    def enter_position(data: pd.DataFrame, index: int, row: pd.Series, curr_qty: float, curr_balance: float, position_type: PositionType) -> Position:
+    def enter_position(data: pd.DataFrame, index: int,row, curr_qty: float, curr_balance: float, position_type: PositionType) -> Position:
+        print('We are in enter_position')
         if position_type == PositionType.LONG:
             buy_price = calc_realistic_price(row, ActionType.BUY, slippage_factor=slippage_factor)
             qty_to_buy = strategy.calc_qty(buy_price, curr_balance, ActionType.BUY)
             position = Position(qty_to_buy, buy_price, position_type)
             data.loc[index, 'qty'] = curr_qty + qty_to_buy
-            data.loc[index, 'balance'] = curr_balance - qty_to_buy * buy_price - commission
+            # data.loc[index, 'balance'] = curr_balance - qty_to_buy * buy_price 
+            data.loc[index, 'balance'] = 0
             
         return position
     
-    def close_position(data: pd.DataFrame, index: int, row: pd.Series, curr_qty: float, curr_balance: float, position: Position):
+    def close_position(data: pd.DataFrame, index: int, row: pd.Series, curr_qty: float, curr_balance: float, position: Position, commission: float=0.0045):
         if position.type == PositionType.LONG:
             sell_price = calc_realistic_price(row, ActionType.SELL, slippage_factor=slippage_factor)
-            data.loc[index, 'qty'] = curr_qty - position.qty
-            data.loc[index, 'balance'] = curr_balance + position.qty * sell_price - commission
+            # data.loc[index, 'qty'] = curr_qty - position.qty
+            data.loc[index, 'qty'] = 0
+            data.loc[index, 'balance'] = curr_balance + (position.qty * (1-commission)) * sell_price 
 
         
     
@@ -57,6 +59,7 @@ def backtest(data: pd.DataFrame, strategy: BaseStrategy, starting_balance: int, 
 
     
     for index, row in data.iterrows():
+        prev_row = data.iloc[index - 1] if index > 0 else None
         curr_qty = data.loc[index - 1, 'qty'] if index > 0 else 0
         curr_balance = data.loc[index - 1, 'balance'] if index > 0 else starting_balance
 

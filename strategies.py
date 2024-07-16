@@ -15,7 +15,12 @@ class BaseStrategy(ABC):
 
     def calc_qty(self, real_price: float, balance: float, action: ActionType, **kwargs) -> float:
         if action == ActionType.BUY:
-            qty = balance / real_price
+            # with open('data\log_2.txt', 'a') as f:
+            #     f.write(f'price is {real_price}\n')
+            #     f.write(f'balance is {balance}\n')
+            #     f.write(f'quantity is {balance / real_price}\n')
+            #     f.write(f'balance is {balance}\n')
+            qty = (balance / real_price) * (1-self.commission) 
         
         elif action == ActionType.SELL:
             qty =  balance / real_price
@@ -43,6 +48,9 @@ class BaseStrategy(ABC):
         if self.sl_rate is not None:
             long_stop_loss_price = position.price * (1 - self.sl_rate)
             if position.type == PositionType.LONG and row['low'] <= long_stop_loss_price:
+                print('Stop loss triggered')
+                print(f'row low is {row["low"]}')
+                print(f'long stop loss price is {long_stop_loss_price}')
                 return position.qty, long_stop_loss_price, ActionType.SELL
 
     
@@ -59,13 +67,16 @@ class BaseStrategy(ABC):
                 return position.qty, long_take_profit_price, ActionType.SELL
             
 class our_strategy(BaseStrategy):
-    def __init__(self, sl_pct:int, tp_pct:int, path:str):
+    def __init__(self, sl_pct:int, tp_pct:int, path:str, commission:float = 0.002):
         self.sl_pct = sl_pct
         self.tp_pct = tp_pct
         self.path = path
+        self.commission = commission
+        
         
     def calc_signal(self, data: pd.DataFrame):
         df_model_res = pd.read_csv(self.path)
+        # df_model_res = df_model_res.iloc[:100]
         data['strategy_signal'] = df_model_res['y_pred']
         
     def check_sl_tp(self, row: pd.Series, position: Position) -> Tuple[float, float, ActionType]:
@@ -75,13 +86,13 @@ class our_strategy(BaseStrategy):
         ### -------------------------------------------------------- ###
         
         def is_stop_loss(self, row: pd.Series, position: Position) -> Tuple[float, float, ActionType]:
-            if row['close'] <= position.price * (1 - self.sl_pct):
+            if row['open'] <= position.price * (1 - self.sl_pct):
                 return position.qty, position.price * (1 - self.sl_pct), ActionType.SELL
             else:
                 return None
         
         def is_take_profit(self, row: pd.Series, position: Position) -> Tuple[float, float, ActionType]:
-            if row['close'] >= position.price * (1 + self.tp_pct):
+            if row['open'] >= position.price * (1 + self.tp_pct):
                 return position.qty, position.price * (1 + self.tp_pct), ActionType.SELL
             else:
                 return None
