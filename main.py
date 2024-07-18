@@ -51,22 +51,23 @@ def plot_profit_vs_hodl_3(df):
     df['test'] = None
  
 # Using a for loop to assign values based on the condition
-    for index, row in df.iterrows():
-        if index > 0:
-            if df.at[index-1, 'qty'] != 0:
-                df.at[index, 'test'] = row['close']
-    # df['test'] = np.where(df['qty'] != 0, df['close'], None)
+    # for index, row in df.iterrows():
+    #     if index > 0:
+    #         if df.at[index-1, 'qty'] != 0:
+    #             df.at[index, 'test'] = row['close']
+    df['test'] = np.where(df['qty'] != 0, df['close'], None)
     
-    df = df.iloc[2200:2500]
+    # df = df.iloc[600:]
     
     df['buy_1'] = np.where(df['buy'] == -2.0, df['close'], None)
     df['sell_1'] = np.where(df['sell'] == 2.0, df['close'], None)
    
     plt.figure(figsize=(25, 10))
-    plt.scatter(df.index, df['buy_1'], label = 'Buy',alpha = 1, marker = '^', color = 'green')
-    plt.scatter(df.index, df['sell_1'], label = 'Sell', alpha = 1, marker = 'v', color = 'red')
+    plt.scatter(df.index, df['buy_1'], label = 'Buy',alpha = 1, marker = '^', color = 'green', s=100)
+    # plt.scatter(df.index, df['sell_1'], label = 'Sell', alpha = 1, marker = 'v', color = 'red')
     df['close'].plot(label='Close', lw=2)  # 'lw' is line width
     plt.plot(df.index, df['test'], color='red', label='In Position')  # Scatter plot
+    plt.title('In and Out of Position On Price Chart', fontsize=25)
     plt.legend()
     plt.show()
  
@@ -97,15 +98,17 @@ def check_backtesting(df):
 
 
 def main():
-    data = pd.read_csv(r'data\all data_v3.csv')
-    strategy = our_strategy(sl_pct = 0.02, tp_pct = 0.05, path = r'data\all data.csv', commission = 0.0045, )
-    backteting_results = backtest(data, strategy, starting_balance = 1000, slippage_factor=10, commission=0.0045)
+    data = pd.read_csv(r'data\period 2_v2.csv')
+    strategy = our_strategy(sl_pct = 0.02, tp_pct = 0.05, path = r'data\period 2_v2.csv', commission = 0.0045, )
+    backteting_results = backtest(data, strategy, starting_balance = 1000, slippage_factor=5, commission=0.0045)
     
     backteting_results.to_csv(r'result\backtesting_results.csv')
     df = pd.read_csv(r'result\backtesting_results.csv')
     
     
     # check_backtesting(df)
+    
+    # evaluate_strategy(df, 'our_strategy')
     
     
 
@@ -124,7 +127,7 @@ def main():
     # df = pd.read_csv('data\period 0.csv')
     # df.set_index('open_time', inplace = True)
     # df.to_csv('data/period 0_v2.csv') 
-    # df_pr = pd.read_csv(r'data\all data.csv')
+    # df_pr = pd.read_csv(r'data\period 2.csv')
     # df_cl = pd.read_csv('data\CHZUSDT_v2.csv')
     # print(df_pr.head())
     # print('---------------------------------')
@@ -133,7 +136,7 @@ def main():
     # df_pr.set_index('open_time', inplace = True)
     # df_pr['open'] = df_cl['open']
     # print(df_pr.head())
-    # df_pr.to_csv(r'data\all data_v3.csv')
+    # df_pr.to_csv(r'data\period 2_v2.csv')
     
 
     

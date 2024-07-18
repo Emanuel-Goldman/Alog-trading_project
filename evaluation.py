@@ -2,18 +2,32 @@ import pandas as pd
 import numpy as np
 
 def calc_total_return(portfolio_values):
-    return (portfolio_values.iloc[-1] / portfolio_values.iloc[0]) - 1.0
+    # Ensure the portfolio_values is not empty
+    if len(portfolio_values) == 0:
+        return 0.0
+    
+    # Calculate total return
+    total_return = (portfolio_values.iloc[-1] / portfolio_values.iloc[0]) - 1.0
+    
+    return total_return
 
 def calc_annualized_return(portfolio_values):
-    yearly_trading_days = 365
-    portfolio_trading_days = portfolio_values.shape[0]/48
-    portfolio_trading_years = portfolio_trading_days / yearly_trading_days 
-    return (portfolio_values.iloc[-1] / portfolio_values.iloc[0])**(1/portfolio_trading_years) - 1.0
+    trading_days_per_year = 365  # Typically, there are 252 trading days in a year
+    total_trading_days = portfolio_values.shape[0]/12
+    print(f'total_trading_days = {total_trading_days}')
+    total_years = total_trading_days / trading_days_per_year
+    print(f'total_years = {total_years}')
+    total_return = portfolio_values.iloc[-1] / portfolio_values.iloc[0]
+    annualized_return = (total_return ** (1 / total_years)) - 1
+    
+    return annualized_return
 
-def calc_annualized_sharpe(portfolio_values: pd.Series, rf: float=0.0):
+def calc_annualized_sharpe(portfolio_values: pd.Series, rf: float=0.045):
     yearly_trading_days = 365
     annualized_return = calc_annualized_return(portfolio_values)
     annualized_std = portfolio_values.pct_change().std() * np.sqrt(yearly_trading_days)
+    print(f'annualized_std = {annualized_std}')
+    print(f'annualized_return = {annualized_return}')
     if annualized_std is None or annualized_std == 0:
         return 0
     sharpe = (annualized_return - rf) / annualized_std
@@ -41,6 +55,17 @@ def calc_calmar(portfolio_values):
     max_drawdown = calc_max_drawdown(portfolio_values)
     annualized_return = calc_annualized_return(portfolio_values)
     return annualized_return / max_drawdown
+
+def calculate_sharpe_ratio_1(df):
+    mean_return = df.iloc[-1]['portfolio_value'] / df.iloc[0]['portfolio_value'] 
+    risk_free_rate = 0.0423
+    std_return =(df['portfolio_value'].pct_change().std())
+    # print(f'The mean return is {mean_return}')
+    # print(f'The risk free rate is {risk_free_rate}')
+    # print(f'The std return is {std_return}')
+    # std_return = sqr(df['portfolio_value'].std())
+    sharpe_ratio = (mean_return - risk_free_rate) / std_return
+    return sharpe_ratio
    
 
 def evaluate_strategy(b_df, strat_name):
@@ -50,11 +75,11 @@ def evaluate_strategy(b_df, strat_name):
     sortino_ratio = calc_sortino(b_df['portfolio_value'])
     max_drawdown = calc_max_drawdown(b_df['portfolio_value'])
     calmar_ratio = calc_calmar(b_df['portfolio_value'])
-    
+  
     print(f"Results for {strat_name}:")
     print(f"Total Return: {total_return:.2%}")
     print(f"Annualized Return: {annualized_return:.2%}")
-    print(f"Annualized Sharpe Ratio: {annualized_sharpe:.2f}")
+    print(f"Sharpe Ratio: {annualized_sharpe:.2f}")
     print(f"Sortino Ratio: {sortino_ratio:.2f}")
     print(f"Max Drawdown: {max_drawdown:.2%}")
     print(f"Calmar Ratio: {calmar_ratio:.2f}")

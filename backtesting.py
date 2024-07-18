@@ -56,7 +56,7 @@ def backtest(data: pd.DataFrame, strategy: BaseStrategy, starting_balance: int, 
     num_trading_days = data.shape[0]
                     # WRONGLY CALCULATED
     ### ------------------------------------ ###
-
+    
     
     for index, row in data.iterrows():
         prev_row = data.iloc[index - 1] if index > 0 else None
@@ -64,7 +64,7 @@ def backtest(data: pd.DataFrame, strategy: BaseStrategy, starting_balance: int, 
         curr_balance = data.loc[index - 1, 'balance'] if index > 0 else starting_balance
 
         # handle stop loss and take profit
-        if position is not None:
+        if position is not None and data.loc[index, 'strategy_signal'] == 0:
             sl_tp_res = strategy.check_sl_tp(data.iloc[index - 1], position)
             if sl_tp_res is not None:
                 sl_tp_qty, sl_tp_price, sl_tp_action = sl_tp_res
